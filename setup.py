@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ytdl7000",
-    version="1.7.11",
+    version="1.7.12",
     author="Vladya",
     python_requires=">=3.9",
     description="Download video from YouTube based on `yt-dlp`",

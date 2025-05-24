@@ -15,7 +15,7 @@ import yt_dlp
 import tkinter.filedialog
 
 __author__ = "Vladya"
-__version__ = "1.7.11"
+__version__ = "1.7.12"
 
 
 def _get_pp_options(use_sponsorblock, audio_only=False):
@@ -70,7 +70,7 @@ def download(
     tempdir.mkdir(parents=True, exist_ok=True)
 
     if audio_only:
-        _format_param = "ba[acodec^=mp3]/ba"
+        _format_param = "ba[acodec^=mp3]/ba/b"
     else:
         _format_param = "bv[height<={0}]+ba/b[height<={0}]".format(best_height)
 
