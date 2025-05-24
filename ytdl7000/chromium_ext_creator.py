@@ -30,6 +30,16 @@ def create_manifest():
         },
         "permissions": [
             "tabs"
+        ],
+        "host_permissions": [
+            "*://*.gvt1.com/*",
+            "*://*.youtu.be/*",
+            "*://*.youtube-nocookie.com/*",
+            "*://*.youtube.com/*",
+            "*://*.youtubeeducation.com/*",
+            "*://*.ytimg.com/*",
+            "*://*.googlevideo.com/*",
+            "*://*.ggpht.com/*",
         ]
     }
 
@@ -70,7 +80,7 @@ def main():
 
     _set_registry()
 
-    for fn in ("popup.html", "scripts.js"):
+    for fn in ("popup.html", "scripts.js", "translations.js"):
         full_fn = pathlib.Path(__file__).parent.joinpath("_data").joinpath(
             fn
         ).resolve(True)

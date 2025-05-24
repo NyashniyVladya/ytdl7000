@@ -1,4 +1,24 @@
 ﻿
+import * as translations from "./translations.js";
+
+let _CONFIG = {
+    lang: null,
+    checkBoxes: {
+        chooseSavedir: false,
+        loadFullPlaylist: false,
+        skipErrors: false,
+        audioOnly: false,
+        useSponsorBlock: true
+    },
+    fields: {
+        maxQuality: "1080"
+    }
+};
+const _config = window.localStorage.getItem("config");
+if (_config) {
+    _CONFIG = JSON.parse(_config);
+};
+
 function _tabHandler([tab]) {
 
     let _uri = `ytdl7000:\"${tab.url}\"`;
@@ -34,11 +54,98 @@ function _tabHandler([tab]) {
     window.open(_uri);
 };
 
-function _setForm() {
-    const button = document.getElementById("startDownload");
-    button.addEventListener(
-        "click",
-        () => chrome.tabs.query({active: true}, _tabHandler)
-    );
+
+function setLang() {
+
+    let lang = _CONFIG.lang;
+    if (lang === null) {
+        const localeObject = new Intl.Locale(navigator.language);
+        lang = localeObject.language;
+        if (!(lang in translations)) {
+            lang = "en";
+        };
+        _CONFIG.lang = lang;
+        window.localStorage.setItem("config", JSON.stringify(_CONFIG));
+    };
+    
+    let element;
+    for (let key in translations[lang]) {
+        element = document.getElementById(key);
+        if (element) {
+            element.innerHTML = translations[lang][key];
+        };
+    };
 };
-_setForm();
+
+function init() {
+    
+    let element;
+    
+    for (let key in _CONFIG.checkBoxes) {
+        element = document.getElementById(key);
+        if (element) {
+            element.checked = _CONFIG.checkBoxes[key];
+            element.addEventListener(
+                "click",
+                function() {
+                    const _element = document.getElementById(key);
+                    _CONFIG.checkBoxes[_element.id] = _element.checked;
+                    window.localStorage.setItem("config", JSON.stringify(_CONFIG));
+                }
+            );
+        };
+    };
+
+
+    for (let key in _CONFIG.fields) {
+        element = document.getElementById(key);
+        if (element) {
+            element.value = _CONFIG.fields[key];
+            element.addEventListener(
+                "input",
+                function() {
+                    const _element = document.getElementById(key);
+                    _CONFIG.fields[_element.id] = _element.value;
+                    window.localStorage.setItem("config", JSON.stringify(_CONFIG));
+                }
+            );
+        };
+    };
+
+
+    element = document.getElementById("langCode");
+    let option;
+    for (let key in translations) {
+
+        option = document.createElement("option");
+        option.value = key;
+        option.innerHTML = key;
+        if (key == _CONFIG.lang) {
+            option.selected = true;
+        };
+        element.appendChild(option);
+    };
+
+    element.addEventListener(
+        "change",
+        function() {
+            const _element = document.getElementById("langCode");
+            _CONFIG.lang = _element.value;
+            window.localStorage.setItem("config", JSON.stringify(_CONFIG));
+            setLang();
+        }
+    );
+
+
+    element = document.getElementById("startDownload");
+    element.addEventListener(
+        "click",
+        function() {
+            chrome.tabs.query({active: true}, _tabHandler);
+        }
+    );
+
+};
+
+setLang();
+init();

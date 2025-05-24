@@ -15,15 +15,21 @@ import yt_dlp
 import tkinter.filedialog
 
 __author__ = "Vladya"
-__version__ = "1.6.2"
+__version__ = "1.7.11"
 
 
-def _get_pp_options(use_sponsorblock):
+def _get_pp_options(use_sponsorblock, audio_only=False):
 
     params = (
         "--sponsorblock-mark", "all",
         "--concat-playlist", "multi_video"
     )
+
+    if audio_only:
+        params += (
+            "-x", "--audio-format", "mp3"
+        )
+
     if use_sponsorblock:
         params += (
             "--sponsorblock-remove", "all,-filler,-music_offtopic"
@@ -64,7 +70,7 @@ def download(
     tempdir.mkdir(parents=True, exist_ok=True)
 
     if audio_only:
-        _format_param = "ba"
+        _format_param = "ba[acodec^=mp3]/ba"
     else:
         _format_param = "bv[height<={0}]+ba/b[height<={0}]".format(best_height)
 
@@ -78,7 +84,10 @@ def download(
         },
         "format": _format_param,
         "overwrites": False,
-        "postprocessors": _get_pp_options(use_sponsorblock=use_sponsorblock)
+        "postprocessors": _get_pp_options(
+            use_sponsorblock=use_sponsorblock,
+            audio_only=audio_only
+        )
     }
     if skip_errors:
         params["ignoreerrors"] = True
