@@ -5,6 +5,7 @@
 
 import sys
 import time
+import logging
 import os
 import shlex
 import argparse
@@ -15,7 +16,24 @@ import yt_dlp
 import tkinter.filedialog
 
 __author__ = "Vladya"
-__version__ = "1.7.12"
+__version__ = "1.8.2"
+
+
+def _get_logger():
+    result = logging.getLogger(__name__)
+    _formatter = logging.Formatter(
+        "%(asctime)s %(levelname)s:%(name)s\n%(message)s\n"
+    )
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(_formatter)
+
+    result.addHandler(_handler)
+    result.setLevel(logging.DEBUG)
+    return result
+
+
+LOGGER = _get_logger()
+del _get_logger
 
 
 def _get_pp_options(use_sponsorblock, audio_only=False):
@@ -87,7 +105,8 @@ def download(
         "postprocessors": _get_pp_options(
             use_sponsorblock=use_sponsorblock,
             audio_only=audio_only
-        )
+        ),
+        "logger": LOGGER
     }
     if skip_errors:
         params["ignoreerrors"] = True
@@ -109,6 +128,7 @@ def main():
         parser.add_argument("urls", nargs='+')
         parser.add_argument("--savedir", default=None)
         parser.add_argument("--best-height", default=1080, type=int)
+        parser.add_argument("--restart-attempts", default=5, type=int)
         parser.add_argument("--load-full-playlist", action="store_true")
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
@@ -131,18 +151,35 @@ def main():
         if _savedir is not None:
             _savedir = pathlib.Path(_savedir).resolve()
 
-        download(
-            *namespace.urls,
-            savedir=_savedir,
-            best_height=namespace.best_height,
-            skip_errors=namespace.skip_errors,
-            load_full_playlist=namespace.load_full_playlist,
-            audio_only=namespace.audio_only,
-            use_sponsorblock=(not namespace.no_sponsorblock)
-        )
+        LOGGER.info("Starting")
+
+        _counter = 0
+        while True:
+
+            LOGGER.info("Attempt %d", (_counter + 1))
+
+            try:
+                download(
+                    *namespace.urls,
+                    savedir=_savedir,
+                    best_height=namespace.best_height,
+                    skip_errors=namespace.skip_errors,
+                    load_full_playlist=namespace.load_full_playlist,
+                    audio_only=namespace.audio_only,
+                    use_sponsorblock=(not namespace.no_sponsorblock)
+                )
+            except Exception as ex:
+                if _counter >= namespace.restart_attempts:
+                    raise
+                LOGGER.exception(ex)
+            else:
+                LOGGER.info("Success")
+                break
+
+            _counter += 1
 
     except Exception as ex:
-        print(ex)
+        LOGGER.exception(ex)
 
     finally:
         os.system("pause")

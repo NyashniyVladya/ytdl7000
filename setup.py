@@ -3,18 +3,31 @@
 @author: Vladya
 """
 
-from setuptools import setup, find_packages
+import setuptools
+import setuptools.command.install
 
-setup(
+
+class _MyInstaller(setuptools.command.install.install):
+
+    def run(self):
+
+        super(_MyInstaller, self).run()
+
+        import ytdl7000.chromium_ext_creator
+
+        ytdl7000.chromium_ext_creator.main()
+
+
+setuptools.setup(
     name="ytdl7000",
-    version="1.7.12",
+    version="1.8.2",
     author="Vladya",
     python_requires=">=3.9",
     description="Download video from YouTube based on `yt-dlp`",
     install_requires=(
         "yt-dlp[default]",
     ),
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     package_data={
         "ytdl7000": ["_data/**"]
     },
@@ -23,5 +36,8 @@ setup(
             "ytdl7000=ytdl7000:main",
             "create_ytdl7000_ext=ytdl7000.chromium_ext_creator:main"
         )
+    },
+    cmdclass={
+        "install": _MyInstaller
     }
 )

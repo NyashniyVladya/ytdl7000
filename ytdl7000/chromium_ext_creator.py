@@ -10,7 +10,7 @@ import pathlib
 import winreg
 from . import __version__ as _version
 
-DESKTOP = pathlib.Path.home().joinpath("Desktop").resolve(True)
+EXT_DIR = pathlib.Path.home().resolve(True)
 
 EXECUTABLE = pathlib.Path(sys.executable).parent.joinpath("Scripts").joinpath(
     "ytdl7000.exe"
@@ -44,7 +44,7 @@ def create_manifest():
     }
 
 
-def _set_registry():
+def _set_uri_scheme():
 
     def _cr_key(key, sub_key):
         return winreg.CreateKeyEx(key, sub_key, access=winreg.KEY_WRITE)
@@ -74,11 +74,13 @@ def _set_registry():
 
 def main():
 
-    ext_folder = DESKTOP.joinpath("ytdl7000_ext").resolve()
-    shutil.rmtree(ext_folder, ignore_errors=True)
+    ext_folder = EXT_DIR.joinpath("ytdl7000_ext").resolve()
+    if ext_folder.exists():
+        shutil.rmtree(ext_folder)
+
     ext_folder.mkdir(parents=True)
 
-    _set_registry()
+    _set_uri_scheme()
 
     for fn in ("popup.html", "scripts.js", "translations.js"):
         full_fn = pathlib.Path(__file__).parent.joinpath("_data").joinpath(
