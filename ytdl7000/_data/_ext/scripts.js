@@ -19,7 +19,7 @@ let _CONFIG = {
 let _config = window.localStorage.getItem("config");
 if (_config) {
     _config = JSON.parse(_config);
-    if (("version" in _config) && (_config.version >= _CONFIG._version)) {
+    if (("version" in _config) && (_config.version >= _CONFIG.version)) {
         _CONFIG = _config;
     };
 };

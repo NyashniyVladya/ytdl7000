@@ -15,7 +15,7 @@ EXT_DIR = pathlib.Path.home().resolve(True)
 
 EXECUTABLE = pathlib.Path(sys.executable).parent.joinpath("Scripts").joinpath(
     "ytdl7000.exe"
-).resolve(True)
+).resolve()
 
 URI_SCHEME = "ytdl7000"
 
