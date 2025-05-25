@@ -16,14 +16,12 @@ import yt_dlp
 import tkinter.filedialog
 
 __author__ = "Vladya"
-__version__ = "1.9.0"
+__version__ = "1.9.1"
 
 
 def _get_logger():
     result = logging.getLogger(__name__)
-    _formatter = logging.Formatter(
-        "%(asctime)s %(levelname)s:%(name)s\n%(message)s\n"
-    )
+    _formatter = logging.Formatter("[%(name)s] [%(levelname)s] %(message)s")
     _handler = logging.StreamHandler()
     _handler.setFormatter(_formatter)
 
