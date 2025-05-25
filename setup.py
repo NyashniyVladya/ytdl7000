@@ -20,7 +20,7 @@ class _MyInstaller(setuptools.command.install.install):
 
 setuptools.setup(
     name="ytdl7000",
-    version="1.8.2",
+    version="1.8.5",
     author="Vladya",
     python_requires=">=3.9",
     description="Download video from YouTube based on `yt-dlp`",

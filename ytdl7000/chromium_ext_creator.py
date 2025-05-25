@@ -3,6 +3,7 @@
 @author: Vladya
 """
 
+import os
 import sys
 import json
 import shutil
@@ -31,6 +32,12 @@ def create_manifest():
         "permissions": [
             "tabs"
         ],
+        "icons": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png",
+            "256": "icons/icon256.png",
+        },
         "host_permissions": [
             "*://*.gvt1.com/*",
             "*://*.youtu.be/*",
@@ -82,13 +89,16 @@ def main():
 
     _set_uri_scheme()
 
-    for fn in ("popup.html", "scripts.js", "translations.js"):
-        full_fn = pathlib.Path(__file__).parent.joinpath("_data").joinpath(
-            fn
-        ).resolve(True)
-        with ext_folder.joinpath(fn).open("wb") as _file_write:
-            with full_fn.open("rb") as _file_read:
-                _file_write.write(_file_read.read())
+    _files = pathlib.Path(__file__).parent.joinpath("_data").joinpath("_ext")
+    _files = _files.resolve(True)
+    for dp, _, fns in os.walk(_files):
+        dp = pathlib.Path(dp).resolve(True)
+        for fn in map(dp.joinpath, fns):
+            target_fn = ext_folder.joinpath(fn.relative_to(_files))
+            target_fn.parent.mkdir(parents=True, exist_ok=True)
+            with target_fn.open("wb") as _file_write:
+                with fn.open("rb") as _file_read:
+                    _file_write.write(_file_read.read())
 
     with ext_folder.joinpath("manifest.json").open(
         'w',
