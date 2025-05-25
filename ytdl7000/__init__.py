@@ -16,7 +16,7 @@ import yt_dlp
 import tkinter.filedialog
 
 __author__ = "Vladya"
-__version__ = "1.8.10"
+__version__ = "1.8.11"
 
 
 def _get_logger():
