@@ -9,6 +9,7 @@ export const ru = {
     skipErrorsLabel: "Игнорировать ошибки",
     audioOnlyLabel: "Загружать только аудио",
     useSponsorBlockLabel: "Удалить рекламу через SponsorBlock",
+    restartAttempts: "Максимум попыток:",
     startDownload: "Начать загрузку"
 };
 
@@ -20,5 +21,6 @@ export const en = {
     skipErrorsLabel: "Skip Errors",
     audioOnlyLabel: "Audio only",
     useSponsorBlockLabel: "Remove garbage by SponsorBlock",
+    restartAttempts: "Max attempts:",
     startDownload: "Start download"
 };

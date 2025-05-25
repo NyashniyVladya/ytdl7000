@@ -16,7 +16,7 @@ import yt_dlp
 import tkinter.filedialog
 
 __author__ = "Vladya"
-__version__ = "1.8.5"
+__version__ = "1.8.10"
 
 
 def _get_logger():
@@ -105,8 +105,7 @@ def download(
         "postprocessors": _get_pp_options(
             use_sponsorblock=use_sponsorblock,
             audio_only=audio_only
-        ),
-        "logger": LOGGER
+        )
     }
     if skip_errors:
         params["ignoreerrors"] = True
@@ -176,6 +175,8 @@ def main():
                 LOGGER.info("Success")
                 break
 
+            LOGGER.info("Wait for the next attempt")
+            time.sleep((1.5 ** float(_counter)))
             _counter += 1
 
     except Exception as ex:

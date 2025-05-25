@@ -3,6 +3,7 @@ import * as translations from "./translations.js";
 
 let _CONFIG = {
     lang: null,
+    version: 2,
     checkBoxes: {
         chooseSavedir: false,
         loadFullPlaylist: false,
@@ -11,12 +12,16 @@ let _CONFIG = {
         useSponsorBlock: true
     },
     fields: {
-        maxQuality: "1080"
+        maxQuality: "1080",
+        restartAttempts: "5"
     }
 };
-const _config = window.localStorage.getItem("config");
+let _config = window.localStorage.getItem("config");
 if (_config) {
-    _CONFIG = JSON.parse(_config);
+    _config = JSON.parse(_config);
+    if (("version" in _config) & (_config.version >= _CONFIG._version)) {
+        _CONFIG = _config;
+    };
 };
 
 function _tabHandler([tab]) {
@@ -50,6 +55,9 @@ function _tabHandler([tab]) {
     if (!(element.checked)) {
         _uri += " --no-sponsorblock";
     };
+
+    element = document.getElementById("restartAttempts");
+    _uri += ` --restart-attempts \"${element.value}\"`;
 
     window.open(_uri);
 };
