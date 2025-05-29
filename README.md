@@ -1,5 +1,8 @@
 # Расширение для удобной загрузки видео с YouTube для chromium браузеров, основанное на `yt-dlp`.
 
+> [!IMPORTANT]
+> Перед установкой убедитесь, что на ПК установлен `Python` версии 3.9 или выше и `ffmpeg`.
+
 ## Как использовать:
 
 1. Скачать проект
@@ -19,6 +22,9 @@
 --------------------------
 
 # Extension for easy downloading videos from YouTube for chromium browsers, based on 'yt-dlp'.
+
+> [!IMPORTANT]
+> Before installing, make sure that your PC has `Python` 3.9 or higher and `ffmpeg`.
 
 ## How to use it:
 
