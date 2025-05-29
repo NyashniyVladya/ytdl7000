@@ -10,15 +10,13 @@ import os
 import shlex
 import argparse
 import pathlib
-import json
 import shutil
 import urllib.parse
 import yt_dlp
-import tkinter.filedialog
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.2"
+__version__ = "1.9.3"
 
 
 def _get_logger():
