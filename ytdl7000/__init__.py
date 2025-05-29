@@ -10,13 +10,15 @@ import os
 import shlex
 import argparse
 import pathlib
+import json
 import shutil
 import urllib.parse
 import yt_dlp
 import tkinter.filedialog
+from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.1"
+__version__ = "1.9.2"
 
 
 def _get_logger():
@@ -143,7 +145,7 @@ def main():
 
         _savedir = namespace.savedir
         if _savedir == ":autoChoice:":
-            _savedir = tkinter.filedialog.askdirectory()
+            _savedir = utils.ask_directory()
 
         if _savedir is not None:
             _savedir = pathlib.Path(_savedir).resolve()

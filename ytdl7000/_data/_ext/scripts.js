@@ -75,7 +75,7 @@ function setLang() {
         _CONFIG.lang = lang;
         window.localStorage.setItem("config", JSON.stringify(_CONFIG));
     };
-    
+
     let element;
     for (let key in translations[lang]) {
         element = document.getElementById(key);
@@ -86,9 +86,9 @@ function setLang() {
 };
 
 function init() {
-    
+
     let element;
-    
+
     for (let key in _CONFIG.checkBoxes) {
         element = document.getElementById(key);
         if (element) {
