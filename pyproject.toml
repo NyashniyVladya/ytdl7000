@@ -5,12 +5,12 @@ requires = ["setuptools", "yt_dlp"]
 
 [project]
 name = "ytdl7000"
-version = "1.9.4"
+version = "1.9.5"
 description = "Download video from YouTube based on `yt-dlp`"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = ["yt_dlp"]
-authors = [{name = Vladya}]
+authors = [{name = "Vladya"}]
 
 [project.scripts]
 ytdl7000 = "ytdl7000:main"
