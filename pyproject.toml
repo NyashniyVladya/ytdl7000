@@ -1,0 +1,23 @@
+
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools", "yt_dlp"]
+
+[project]
+name = "ytdl7000"
+version = "1.9.4"
+description = "Download video from YouTube based on `yt-dlp`"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["yt_dlp"]
+authors = [{name = Vladya}]
+
+[project.scripts]
+ytdl7000 = "ytdl7000:main"
+create_ytdl7000_ext = "ytdl7000.chromium_ext_creator:main"
+
+[tool.setuptools]
+packages = ["ytdl7000"]
+
+[tool.setuptools.package-data]
+ytdl7000 = ["_data/**"]
