@@ -16,7 +16,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.5"
+__version__ = "1.9.6"
 
 
 def _get_logger():
@@ -47,7 +47,8 @@ def _get_pp_options(use_sponsorblock, audio_only=False):
         )
     else:
         params += (
-            "--recode-video", "mp4"
+            "--merge-output-format", "mp4",
+            "--remux-video", "mp4"
         )
 
     if use_sponsorblock:
