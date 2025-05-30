@@ -5,12 +5,15 @@
 
 ## Как использовать:
 
-1. Скачать проект
-2. Открыть командную строку в директории скачанного проекта
-3. Запустить `python -m pip install -U -r requirements.txt`
-4. Запустить установку через `python -m pip install -U .`
-5. По окончании установки появится папка `%userprofile%\\ytdl7000_ext` - установить её как расширение в вашем chromium браузере (инструкция ниже)
-6. На странице с нужным видео/каналом/плейлистом нажать на иконку расширения и выбрать нужные опции загрузки
+1. Открыть командную строку
+2. Запустить следующие команды:
+   ```cmd
+   python -m pip install -U yt-dlp[default]
+   python -m pip cache purge
+   python -m pip install -U https://github.com/NyashniyVladya/ytdl7000/archive/refs/heads/main.zip
+   ```
+3. По окончании установки появится папка `%userprofile%\\ytdl7000_ext` - установить её как расширение в вашем chromium браузере (инструкция ниже)
+4. На странице с нужным видео/каналом/плейлистом нажать на иконку расширения и выбрать нужные опции загрузки
 
 ### Как установить расширение в chromium:
 
@@ -28,12 +31,15 @@
 
 ## How to use it:
 
-1. Download the project
-2. Open the command prompt in the downloaded project directory
-3. Run `python -m pip install -U -r requirements.txt`
-4. Run the installation via `python -m pip install -U .`
-5. After the installation is complete, the folder `%userprofile%\\ytdl7000_ext` will appear - install it as an extension in your chromium browser (instructions below)
-6. On the page with the desired video/channel/playlist, click on the extension icon and select the desired download options
+1. Open the command prompt
+2. Run the following commands:
+   ```cmd
+   python -m pip install -U yt-dlp[default]
+   python -m pip cache purge
+   python -m pip install -U https://github.com/NyashniyVladya/ytdl7000/archive/refs/heads/main.zip
+   ```
+3. After the installation is complete, the folder `%userprofile%\\ytdl7000_ext` will appear - install it as an extension in your chromium browser (instructions below)
+4. On the page with the desired video/channel/playlist, click on the extension icon and select the desired download options
 
 ### How to install an extension in chromium:
 
