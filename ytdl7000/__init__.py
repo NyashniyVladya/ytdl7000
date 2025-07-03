@@ -16,7 +16,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.6"
+__version__ = "1.9.7"
 
 
 def _get_logger():
@@ -99,6 +99,7 @@ def download(
         "min_views": None,
         "max_views": None,
         "age_limit": 21,
+        "windowsfilenames": True,
         "paths": {
             "home": str(savedir),
             "temp": str(tempdir)
@@ -112,7 +113,12 @@ def download(
     }
     if skip_errors:
         params["ignoreerrors"] = True
-    if not load_full_playlist:
+
+    if load_full_playlist:
+        params["outtmpl"] = {
+            "default": "%(playlist)s/%(playlist_index)s. %(title)s.%(ext)s"
+        }
+    else:
         params["noplaylist"] = True
 
     try:
