@@ -16,7 +16,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.7"
+__version__ = "1.9.8"
 
 
 def _get_logger():
@@ -68,6 +68,9 @@ def download(
         best_height=1080,
         skip_errors=False,
         load_full_playlist=True,
+        use_playlist_extra_folder=True,
+        use_playlist_numeration=True,
+        playlist_items=None,
         audio_only=False,
         use_sponsorblock=True
 ):
@@ -111,13 +114,25 @@ def download(
             audio_only=audio_only
         )
     }
+
+    if isinstance(playlist_items, str):
+        playlist_items = playlist_items.strip()
+
+    if playlist_items:
+        params["playlist_items"] = playlist_items
+
     if skip_errors:
         params["ignoreerrors"] = True
 
     if load_full_playlist:
-        params["outtmpl"] = {
-            "default": "%(playlist)s/%(playlist_index)s. %(title)s.%(ext)s"
-        }
+        if use_playlist_extra_folder or use_playlist_numeration:
+            pattern = ""
+            if use_playlist_extra_folder:
+                pattern += "%(playlist)s/"
+            if use_playlist_numeration:
+                pattern += "%(playlist_index)s. "
+            pattern += "%(title)s.%(ext)s"
+            params["outtmpl"] = {"default": pattern}
     else:
         params["noplaylist"] = True
 
@@ -138,6 +153,9 @@ def main():
         parser.add_argument("--best-height", default=1080, type=int)
         parser.add_argument("--restart-attempts", default=5, type=int)
         parser.add_argument("--load-full-playlist", action="store_true")
+        parser.add_argument("--playlist-extra-folder", action="store_true")
+        parser.add_argument("--use-playlist-numeration", action="store_true")
+        parser.add_argument("--playlist-items", default=None)
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
         parser.add_argument("--from-browser", action="store_true")
@@ -173,6 +191,9 @@ def main():
                     best_height=namespace.best_height,
                     skip_errors=namespace.skip_errors,
                     load_full_playlist=namespace.load_full_playlist,
+                    use_playlist_extra_folder=namespace.playlist_extra_folder,
+                    use_playlist_numeration=namespace.use_playlist_numeration,
+                    playlist_items=namespace.playlist_items,
                     audio_only=namespace.audio_only,
                     use_sponsorblock=(not namespace.no_sponsorblock)
                 )

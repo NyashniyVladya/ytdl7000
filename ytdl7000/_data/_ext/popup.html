@@ -9,38 +9,77 @@
     <body>
         <div>
             <div>
+
                 <form>
+
                     <p>
-                        <div><label for="maxQuality" id="maxQualityLabel">Max video quality:</label></div>
-                        <input type="number" min="144" value="1080" id="maxQuality" name="maxQuality">
+                        <p>
+                            <div><label for="maxQuality" id="maxQualityLabel">Max video quality:</label></div>
+                            <input type="number" min="144" value="1080" id="maxQuality" name="maxQuality">
+                        </p>
                     </p>
+
                     <p>
-                        <input type="checkbox" id="chooseSavedir" name="chooseSavedir">
-                        <label for="chooseSavedir" id="chooseSavedirLabel">Choose save directory</label>
+                        <p>
+                            <input type="checkbox" id="chooseSavedir" name="chooseSavedir">
+                            <label for="chooseSavedir" id="chooseSavedirLabel">Choose save directory</label>
+                        </p>
                     </p>
+
                     <p>
-                        <input type="checkbox" id="loadFullPlaylist" name="loadFullPlaylist">
-                        <label for="loadFullPlaylist" id="loadFullPlaylistLabel">Load Full Playlist</label>
+                        <p>
+                            <input type="checkbox" id="loadFullPlaylist" name="loadFullPlaylist">
+                            <label for="loadFullPlaylist" id="loadFullPlaylistLabel">Load full playlist</label>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="savePlaylistInExtraFolder" name="savePlaylistInExtraFolder">
+                            <label for="savePlaylistInExtraFolder" id="savePlaylistInExtraFolderLabel">Save playlist in extra folder</label>
+                        </p>
+                        <p>
+                            <input type="checkbox" id="usePlaylistNumeration" name="usePlaylistNumeration">
+                            <label for="usePlaylistNumeration" id="usePlaylistNumerationLabel">Use playlist numeration</label>
+                        </p>
+
+
+                        <p>
+                            <div><label for="playlistItems" id="playlistItemsLabel">Specify playlist items:</label></div>
+                            <input type=text id="playlistItems" name="playlistItems">
+                        </p>
+
                     </p>
+
                     <p>
-                        <input type="checkbox" id="skipErrors" name="skipErrors">
-                        <label for="skipErrors" id="skipErrorsLabel">Skip Errors</label>
+                        <p>
+                            <input type="checkbox" id="skipErrors" name="skipErrors">
+                            <label for="skipErrors" id="skipErrorsLabel">Skip errors</label>
+                        </p>
                     </p>
+
                     <p>
-                        <input type="checkbox" id="audioOnly" name="audioOnly">
-                        <label for="audioOnly" id="audioOnlyLabel">Audio only</label>
+                        <p>
+                            <input type="checkbox" id="audioOnly" name="audioOnly">
+                            <label for="audioOnly" id="audioOnlyLabel">Audio only</label>
+                        </p>
                     </p>
+
                     <p>
-                        <input type="checkbox" id="useSponsorBlock" name="useSponsorBlock" checked>
-                        <label for="useSponsorBlock" id="useSponsorBlockLabel">Remove garbage by SponsorBlock</label>
+                        <p>
+                            <input type="checkbox" id="useSponsorBlock" name="useSponsorBlock" checked>
+                            <label for="useSponsorBlock" id="useSponsorBlockLabel">Remove garbage by SponsorBlock</label>
+                        </p>
                     </p>
+
                     <p>
-                        <div><label for="restartAttempts" id="restartAttemptsLabel">Max attempts:</label></div>
-                        <input type="number" min="0" value="5" id="restartAttempts" name="restartAttempts">
+                        <p>
+                            <div><label for="restartAttempts" id="restartAttemptsLabel">Max attempts:</label></div>
+                            <input type="number" min="0" value="5" id="restartAttempts" name="restartAttempts">
+                        </p>
                     </p>
+
                     <p>
                         <button type="button" id="startDownload" name="startDownload">Start download</button>
                     </p>
+
                 </form>
             </div>
             <div>

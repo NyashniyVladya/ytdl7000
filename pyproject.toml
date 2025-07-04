@@ -5,7 +5,7 @@ requires = ["setuptools", "yt_dlp"]
 
 [project]
 name = "ytdl7000"
-version = "1.9.7"
+version = "1.9.8"
 description = "Download video from YouTube based on `yt-dlp`"
 readme = "README.md"
 requires-python = ">=3.9"

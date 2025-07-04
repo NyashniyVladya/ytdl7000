@@ -7,13 +7,16 @@ let _CONFIG = {
     checkBoxes: {
         chooseSavedir: false,
         loadFullPlaylist: false,
+        savePlaylistInExtraFolder: true,
+        usePlaylistNumeration: true,
         skipErrors: false,
         audioOnly: false,
         useSponsorBlock: true
     },
     fields: {
         maxQuality: "1080",
-        restartAttempts: "5"
+        restartAttempts: "5",
+        playlistItems: ""
     }
 };
 let _config = window.localStorage.getItem("config");
@@ -29,7 +32,9 @@ function _tabHandler([tab]) {
     let _uri = `ytdl7000:\"${tab.url}\"`;
 
     let element = document.getElementById("maxQuality");
-    _uri += ` --best-height \"${element.value}\"`;
+    if (element.value) {
+        _uri += ` --best-height \"${element.value}\"`;
+    };
 
     element = document.getElementById("chooseSavedir");
     if (element.checked) {
@@ -39,6 +44,21 @@ function _tabHandler([tab]) {
     element = document.getElementById("loadFullPlaylist");
     if (element.checked) {
         _uri += " --load-full-playlist";
+    };
+
+    element = document.getElementById("savePlaylistInExtraFolder");
+    if (element.checked) {
+        _uri += " --playlist-extra-folder";
+    };
+
+    element = document.getElementById("usePlaylistNumeration");
+    if (element.checked) {
+        _uri += " --use-playlist-numeration";
+    };
+
+    element = document.getElementById("playlistItems");
+    if (element.value) {
+        _uri += ` --playlist-items \"${element.value}\"`;
     };
 
     element = document.getElementById("skipErrors");
@@ -57,7 +77,9 @@ function _tabHandler([tab]) {
     };
 
     element = document.getElementById("restartAttempts");
-    _uri += ` --restart-attempts \"${element.value}\"`;
+    if (element.value) {
+        _uri += ` --restart-attempts \"${element.value}\"`;
+    };
 
     window.open(_uri);
 };
