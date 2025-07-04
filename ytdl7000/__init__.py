@@ -16,7 +16,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.9"
+__version__ = "1.9.10"
 
 
 def _get_logger():
@@ -108,6 +108,7 @@ def download(
             "temp": str(tempdir)
         },
         "format": _format_param,
+        "final_ext": ("mp3" if audio_only else "mp4"),
         "overwrites": False,
         "postprocessors": _get_pp_options(
             use_sponsorblock=use_sponsorblock,
