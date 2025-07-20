@@ -3,12 +3,13 @@ import * as translations from "./translations.js";
 
 let _CONFIG = {
     lang: null,
-    version: 3,
+    version: 4,
     checkBoxes: {
         chooseSavedir: false,
         loadFullPlaylist: false,
         savePlaylistInExtraFolder: true,
         usePlaylistNumeration: true,
+        invertPlaylistNumeration: false,
         skipErrors: false,
         audioOnly: false,
         useSponsorBlock: true
@@ -54,6 +55,11 @@ function _tabHandler([tab]) {
     element = document.getElementById("usePlaylistNumeration");
     if (element.checked) {
         _uri += " --use-playlist-numeration";
+    };
+
+    element = document.getElementById("invertPlaylistNumeration");
+    if (element.checked) {
+        _uri += " --invert-playlist-numeration";
     };
 
     element = document.getElementById("playlistItems");

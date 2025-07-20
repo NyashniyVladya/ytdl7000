@@ -16,7 +16,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.10"
+__version__ = "1.9.11"
 
 
 def _get_logger():
@@ -71,6 +71,7 @@ def download(
         use_playlist_extra_folder=True,
         use_playlist_numeration=True,
         playlist_items=None,
+        invert_playlist_numeration=False,
         audio_only=False,
         use_sponsorblock=True
 ):
@@ -131,7 +132,10 @@ def download(
             if use_playlist_extra_folder:
                 pattern += "%(playlist)s/"
             if use_playlist_numeration:
-                pattern += "%(playlist_index)s. "
+                if invert_playlist_numeration:
+                    pattern += "%(playlist_count-playlist_index+1)s. "
+                else:
+                    pattern += "%(playlist_index)s. "
             pattern += "%(title)s.%(ext)s"
             params["outtmpl"] = {"default": pattern}
     else:
@@ -156,6 +160,7 @@ def main():
         parser.add_argument("--load-full-playlist", action="store_true")
         parser.add_argument("--playlist-extra-folder", action="store_true")
         parser.add_argument("--use-playlist-numeration", action="store_true")
+        parser.add_argument("--invert-playlist-numeration", action="store_true")
         parser.add_argument("--playlist-items", default=None)
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
@@ -194,6 +199,7 @@ def main():
                     load_full_playlist=namespace.load_full_playlist,
                     use_playlist_extra_folder=namespace.playlist_extra_folder,
                     use_playlist_numeration=namespace.use_playlist_numeration,
+                    invert_playlist_numeration=namespace.invert_playlist_numeration,
                     playlist_items=namespace.playlist_items,
                     audio_only=namespace.audio_only,
                     use_sponsorblock=(not namespace.no_sponsorblock)
