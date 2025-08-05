@@ -3,7 +3,7 @@ import * as translations from "./translations.js";
 
 let _CONFIG = {
     lang: null,
-    version: 4,
+    version: 5,
     checkBoxes: {
         chooseSavedir: false,
         loadFullPlaylist: false,
