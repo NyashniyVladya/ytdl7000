@@ -17,7 +17,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.15"
+__version__ = "1.9.16"
 
 
 def _get_logger():
@@ -181,7 +181,6 @@ def download(
         for url in urls:
 
             with yt_dlp.YoutubeDL(params=params) as _downloader:
-                nonlocal info
                 info = _downloader.extract_info(
                     url,
                     download=False,
