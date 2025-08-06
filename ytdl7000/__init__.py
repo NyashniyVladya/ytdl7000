@@ -17,7 +17,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.14"
+__version__ = "1.9.15"
 
 
 def _get_logger():
@@ -100,12 +100,41 @@ def download(
     else:
         _format_param = "bv[height<={0}]+ba/b[height<={0}]".format(best_height)
 
-    output_filenames = []
+    info = None
+    _pattern = re.compile("^(?P<num>\\d+)(?=\\.\\s)")
 
     def _f(fn):
+
+        if not load_full_playlist:
+            return
+
+        if not use_playlist_numeration:
+            return
+
+        if not invert_playlist_numeration:
+            return
+
+        assert info
+        if "playlist_count" not in info:
+            return
+
+        _playlist_count = info["playlist_count"]
+        size = str(len(str(_playlist_count)))
+
         fn = pathlib.Path(fn).resolve()
-        if fn not in output_filenames:
-            output_filenames.append(fn)
+
+        _mtch = _pattern.search(fn.name)
+        if not _mtch:
+            return
+
+        current_id = int(_mtch.group("num")) - 1
+        new_id = (_playlist_count - current_id)
+        new_id = "{0:>0{1}}".format(new_id, size)
+
+        new_fn = fn.parent.joinpath(
+            _pattern.sub(new_id, fn.name)
+        )
+        os.rename(fn, new_fn)
 
     params = {
         "min_views": None,
@@ -152,40 +181,13 @@ def download(
         for url in urls:
 
             with yt_dlp.YoutubeDL(params=params) as _downloader:
+                nonlocal info
                 info = _downloader.extract_info(
                     url,
                     download=False,
                     process=False
                 )
-                output_filenames.clear()
                 _downloader.download((url, ))
-
-            if load_full_playlist:
-                if use_playlist_numeration:
-                    if invert_playlist_numeration:
-
-                        if "playlist_count" not in info:
-                            return
-
-                        _playlist_count = info["playlist_count"]
-                        size = str(len(str(_playlist_count)))
-
-                        _pattern = re.compile("^(?P<num>\\d+)(?=\\.\\s)")
-
-                        for fn in output_filenames:
-
-                            _mtch = _pattern.search(fn.name)
-                            if not _mtch:
-                                continue
-
-                            current_id = int(_mtch.group("num")) - 1
-                            new_id = (_playlist_count - current_id)
-                            new_id = "{0:>0{1}}".format(new_id, size)
-
-                            new_fn = fn.parent.joinpath(
-                                _pattern.sub(new_id, fn.name)
-                            )
-                            os.rename(fn, new_fn)
 
     finally:
         shutil.rmtree(tempdir, ignore_errors=True)
