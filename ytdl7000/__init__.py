@@ -17,7 +17,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.16"
+__version__ = "1.9.22"
 
 
 def _get_logger():
@@ -96,9 +96,11 @@ def download(
     tempdir.mkdir(parents=True, exist_ok=True)
 
     if audio_only:
-        _format_param = "ba[acodec^=mp3]/ba/b"
+        _format_param = "ba[acodec^=mp3]/ba/b/b*"
     else:
-        _format_param = "bv[height<={0}]+ba/b[height<={0}]".format(best_height)
+        _format_param = """
+            bv[height<={0}]+ba/b[height<={0}]/bv+ba/b/b*
+        """.strip().format(best_height)
 
     info = None
     _pattern = re.compile("^(?P<num>\\d+)(?=\\.\\s)")
@@ -152,6 +154,10 @@ def download(
             use_sponsorblock=use_sponsorblock,
             audio_only=audio_only
         ),
+        "postprocessor_args": {
+            "merger+ffmpeg_i1": ["-stream_loop", "-1"],
+            "merger+ffmpeg_o1": ["-shortest", "-shortest_buf_duration", "0"]
+        },
         "post_hooks": (_f, )
     }
 
