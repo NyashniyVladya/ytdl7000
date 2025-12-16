@@ -8,16 +8,18 @@ import sys
 import time
 import logging
 import os
+import io
 import shlex
 import argparse
 import pathlib
+import json
 import shutil
 import urllib.parse
 import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.9.22"
+__version__ = "1.12.6"
 
 
 def _get_logger():
@@ -74,7 +76,8 @@ def download(
         playlist_items=None,
         invert_playlist_numeration=False,
         audio_only=False,
-        use_sponsorblock=True
+        use_sponsorblock=True,
+        cookies=None
 ):
 
     best_height = int(best_height)
@@ -182,6 +185,9 @@ def download(
     else:
         params["noplaylist"] = True
 
+    if cookies:
+        params["cookiefile"] = cookies
+
     try:
 
         for url in urls:
@@ -212,10 +218,11 @@ def main():
         parser.add_argument("--use-playlist-numeration", action="store_true")
         parser.add_argument("--invert-playlist-numeration", action="store_true")
         parser.add_argument("--playlist-items", default=None)
+        parser.add_argument("--cookies", action="append", nargs=7, default=None)
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
-        parser.add_argument("--from-browser", action="store_true")
         parser.add_argument("--no-sponsorblock", action="store_true")
+        parser.add_argument("--from-browser", action="store_true")
 
         namespace = parser.parse_args()
         if namespace.from_browser:
@@ -232,6 +239,25 @@ def main():
 
         if _savedir is not None:
             _savedir = pathlib.Path(_savedir).resolve()
+
+        cookies = None
+        if namespace.cookies:
+            cookies = io.StringIO()
+            cookies.write("# Netscape HTTP Cookie File")
+            cookies.write('\n')
+            for cookie in namespace.cookies:
+                domain, subdomains, path, httpsOnly, expires, name, value = (
+                    cookie
+                )
+                subdomains, httpsOnly = map(json.loads, (subdomains, httpsOnly))
+                subdomains = ("TRUE" if subdomains else "FALSE")
+                httpsOnly = ("TRUE" if httpsOnly else "FALSE")
+
+                cookies.write(
+                    '\t'.join((domain, subdomains, path, httpsOnly, expires, name, value))
+                )
+                cookies.write('\n')
+            cookies.seek(0)
 
         LOGGER.info("Starting")
 
@@ -252,7 +278,8 @@ def main():
                     invert_playlist_numeration=namespace.invert_playlist_numeration,
                     playlist_items=namespace.playlist_items,
                     audio_only=namespace.audio_only,
-                    use_sponsorblock=(not namespace.no_sponsorblock)
+                    use_sponsorblock=(not namespace.no_sponsorblock),
+                    cookies=cookies
                 )
             except Exception as ex:
                 if _counter >= namespace.restart_attempts:

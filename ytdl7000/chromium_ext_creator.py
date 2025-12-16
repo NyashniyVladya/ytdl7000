@@ -25,12 +25,13 @@ def create_manifest():
         "manifest_version": 3,  # Constant value
         "name": "ytdl7000",
         "version": _version,
-        "description": "Chromium ext for download videos from YouTube",
+        "description": "Chromium ext for download videos from websites",
         "action": {
             "default_popup": "popup.html"
         },
         "permissions": [
-            "tabs"
+            "tabs",
+            "cookies"
         ],
         "icons": {
             "16": "icons/icon16.png",
@@ -39,14 +40,8 @@ def create_manifest():
             "256": "icons/icon256.png",
         },
         "host_permissions": [
-            "*://*.gvt1.com/*",
-            "*://*.youtu.be/*",
-            "*://*.youtube-nocookie.com/*",
-            "*://*.youtube.com/*",
-            "*://*.youtubeeducation.com/*",
-            "*://*.ytimg.com/*",
-            "*://*.googlevideo.com/*",
-            "*://*.ggpht.com/*",
+            "http://*/*",
+            "https://*/*"
         ]
     }
 

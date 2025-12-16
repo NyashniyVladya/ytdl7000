@@ -29,8 +29,13 @@ if (_config) {
 };
 
 function _tabHandler([tab]) {
+    const cookiesPromise = chrome.cookies.getAll({url: tab.url});
+    cookiesPromise.then(cookies => {_runScript(tab.url, cookies);});
+};
 
-    let _uri = `ytdl7000:\"${tab.url}\"`;
+function _runScript(url, cookies) {
+
+    let _uri = `ytdl7000:\"${url}\"`;
 
     let element = document.getElementById("maxQuality");
     if (element.value) {
@@ -87,7 +92,19 @@ function _tabHandler([tab]) {
         _uri += ` --restart-attempts \"${element.value}\"`;
     };
 
+    for (const cookie of cookies) {
+        _uri += " --cookies"
+        _uri += ` \"${cookie.domain}\"`;
+        _uri += ` \"${cookie.domain.startsWith(".")}\"`;
+        _uri += ` \"${cookie.path}\"`;
+        _uri += ` \"${!cookie.httpOnly}\"`;
+        _uri += ` \"${Math.round(cookie.expirationDate)}\"`;
+        _uri += ` \"${cookie.name}\"`;
+        _uri += ` \"${cookie.value}\"`;
+    };
+
     window.open(_uri);
+
 };
 
 
