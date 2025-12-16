@@ -19,7 +19,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.12.6"
+__version__ = "1.12.7"
 
 
 def _get_logger():
@@ -298,6 +298,16 @@ def main():
 
     finally:
         os.system("pause")
+
+
+def get_available_services():
+    return ", ".join(
+        sorted(
+            frozenset(
+                map(lambda a: a.ie_key(), yt_dlp.extractor.list_extractors())
+            )
+        )
+    )
 
 
 if __name__ == "__main__":
