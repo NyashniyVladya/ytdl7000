@@ -116,7 +116,7 @@ async function _runScript(url) {
                 cookiesNetscape += cookie.path;
                 cookiesNetscape += "\t";
 
-                cookiesNetscape += (cookie.httpOnly) ? "FALSE" : "TRUE";
+                cookiesNetscape += (cookie.httpOnly) ? "TRUE" : "FALSE";
                 cookiesNetscape += "\t";
 
                 cookiesNetscape += (cookie.expirationDate) ? String(Math.round(cookie.expirationDate)) : "";
