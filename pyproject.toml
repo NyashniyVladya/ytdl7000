@@ -5,10 +5,10 @@ requires = ["setuptools", "yt_dlp"]
 
 [project]
 name = "ytdl7000"
-version = "1.15.20"
+version = "1.15.21"
 description = "Download video from video hostings based on `yt-dlp`"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = ["yt_dlp"]
 authors = [{name = "Vladya"}]
 
