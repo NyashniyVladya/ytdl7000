@@ -8,6 +8,7 @@ import sys
 import time
 import logging
 import os
+import io
 import shlex
 import argparse
 import pathlib
@@ -17,7 +18,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.15.15"
+__version__ = "1.15.19"
 
 
 def _get_logger():
@@ -75,8 +76,7 @@ def download(
         invert_playlist_numeration=False,
         audio_only=False,
         use_sponsorblock=True,
-        cookies=None,
-        _delete_cookie_file=False
+        cookies=None
 ):
 
     best_height = int(best_height)
@@ -201,8 +201,6 @@ def download(
 
     finally:
         shutil.rmtree(tempdir, ignore_errors=True)
-        if _delete_cookie_file and cookies and cookies.is_file():
-            cookies.unlink(missing_ok=True)
 
 
 def main():
@@ -223,9 +221,12 @@ def main():
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
         parser.add_argument("--no-sponsorblock", action="store_true")
+        parser.add_argument("--wait-cookie-timeout", default=15., type=float)
         parser.add_argument("--from-browser", action="store_true")
 
         namespace = parser.parse_args()
+        LOGGER.info("Starting")
+
         _from_browser = namespace.from_browser
         if _from_browser:
             _protocol = "ytdl7000:"
@@ -242,11 +243,35 @@ def main():
         if _savedir is not None:
             _savedir = pathlib.Path(_savedir).resolve()
 
-        cookies = namespace.cookies_file
-        if cookies:
-            cookies = pathlib.Path(cookies).resolve()
+        cookies = None
+        _cookies = namespace.cookies_file
+        if _cookies:
 
-        LOGGER.info("Starting")
+            _cookies = pathlib.Path(_cookies).resolve()
+            if _from_browser:
+                _wait_start_time = None
+                while True:
+                    # Waiting for the file to be available,
+                    # in case an error occurred when downloading the file
+                    # by the browser.
+                    if _cookies.is_file():
+                        break
+                    _now = time.time()
+                    if _wait_start_time is None:
+                        _wait_start_time = _now
+                    _wait_time = _now - _wait_start_time
+                    if _wait_time > namespace.wait_cookie_timeout:
+                        break
+                    time.sleep(.1)
+
+            if not _cookies.is_file():
+                raise RuntimeError("No cookie file was found")
+
+            with _cookies.open('r', encoding="utf_8") as _fo:
+                cookies = io.StringIO(_fo.read())
+
+            if _from_browser:
+                _cookies.unlink(missing_ok=True)
 
         _counter = 0
         while True:
@@ -266,8 +291,7 @@ def main():
                     playlist_items=namespace.playlist_items,
                     audio_only=namespace.audio_only,
                     use_sponsorblock=(not namespace.no_sponsorblock),
-                    cookies=cookies,
-                    _delete_cookie_file=_from_browser
+                    cookies=cookies
                 )
             except Exception as ex:
                 if _counter >= namespace.restart_attempts:

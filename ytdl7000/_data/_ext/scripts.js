@@ -119,7 +119,7 @@ async function _runScript(url) {
                 cookiesNetscape += (cookie.httpOnly) ? "FALSE" : "TRUE";
                 cookiesNetscape += "\t";
 
-                cookiesNetscape += String(Math.round(cookie.expirationDate));
+                cookiesNetscape += (cookie.expirationDate) ? String(Math.round(cookie.expirationDate)) : "";
                 cookiesNetscape += "\t";
 
                 cookiesNetscape += cookie.name;
@@ -143,7 +143,7 @@ async function _runScript(url) {
             if (downloadId !== undefined) {
                 while (true) {
                     let [downloadItem] = await chrome.downloads.search({id: downloadId});
-                    if (downloadItem.filename) {
+                    if (downloadItem.filename && downloadItem.exists) {
                         _uri += ` --cookies-file \"${downloadItem.filename}\"`;
                         break;
                     };
