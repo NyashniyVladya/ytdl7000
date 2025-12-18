@@ -8,18 +8,16 @@ import sys
 import time
 import logging
 import os
-import io
 import shlex
 import argparse
 import pathlib
-import json
 import shutil
 import urllib.parse
 import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.12.7"
+__version__ = "1.15.14"
 
 
 def _get_logger():
@@ -77,7 +75,8 @@ def download(
         invert_playlist_numeration=False,
         audio_only=False,
         use_sponsorblock=True,
-        cookies=None
+        cookies=None,
+        _delete_cookie_file=False
 ):
 
     best_height = int(best_height)
@@ -202,6 +201,8 @@ def download(
 
     finally:
         shutil.rmtree(tempdir, ignore_errors=True)
+        if _delete_cookie_file and cookies and cookies.is_file():
+            cookies.unlink(missing_ok=True)
 
 
 def main():
@@ -218,14 +219,15 @@ def main():
         parser.add_argument("--use-playlist-numeration", action="store_true")
         parser.add_argument("--invert-playlist-numeration", action="store_true")
         parser.add_argument("--playlist-items", default=None)
-        parser.add_argument("--cookies", action="append", nargs=7, default=None)
+        parser.add_argument("--cookies-file", default=None)
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
         parser.add_argument("--no-sponsorblock", action="store_true")
         parser.add_argument("--from-browser", action="store_true")
 
         namespace = parser.parse_args()
-        if namespace.from_browser:
+        _from_browser = namespace.from_browser
+        if _from_browser:
             _protocol = "ytdl7000:"
             single_arg = sys.argv[1]
             if single_arg.startswith(_protocol):
@@ -240,24 +242,9 @@ def main():
         if _savedir is not None:
             _savedir = pathlib.Path(_savedir).resolve()
 
-        cookies = None
-        if namespace.cookies:
-            cookies = io.StringIO()
-            cookies.write("# Netscape HTTP Cookie File")
-            cookies.write('\n')
-            for cookie in namespace.cookies:
-                domain, subdomains, path, httpsOnly, expires, name, value = (
-                    cookie
-                )
-                subdomains, httpsOnly = map(json.loads, (subdomains, httpsOnly))
-                subdomains = ("TRUE" if subdomains else "FALSE")
-                httpsOnly = ("TRUE" if httpsOnly else "FALSE")
-
-                cookies.write(
-                    '\t'.join((domain, subdomains, path, httpsOnly, expires, name, value))
-                )
-                cookies.write('\n')
-            cookies.seek(0)
+        cookies = namespace.cookies_file
+        if cookies:
+            cookies = pathlib.Path(cookies).resolve()
 
         LOGGER.info("Starting")
 
@@ -279,7 +266,8 @@ def main():
                     playlist_items=namespace.playlist_items,
                     audio_only=namespace.audio_only,
                     use_sponsorblock=(not namespace.no_sponsorblock),
-                    cookies=cookies
+                    cookies=cookies,
+                    _delete_cookie_file=_from_browser
                 )
             except Exception as ex:
                 if _counter >= namespace.restart_attempts:

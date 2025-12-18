@@ -31,7 +31,8 @@ def create_manifest():
         },
         "permissions": [
             "tabs",
-            "cookies"
+            "cookies",
+            "downloads"
         ],
         "icons": {
             "16": "icons/icon16.png",

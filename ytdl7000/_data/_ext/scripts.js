@@ -12,7 +12,8 @@ let _CONFIG = {
         invertPlaylistNumeration: false,
         skipErrors: false,
         audioOnly: false,
-        useSponsorBlock: true
+        useSponsorBlock: true,
+        passCookies: false
     },
     fields: {
         maxQuality: "1080",
@@ -28,12 +29,16 @@ if (_config) {
     };
 };
 
-function _tabHandler([tab]) {
-    const cookiesPromise = chrome.cookies.getAll({url: tab.url});
-    cookiesPromise.then(cookies => {_runScript(tab.url, cookies);});
+async function sleep(ms) {
+    return new Promise(((resolve) => setTimeout(resolve, ms)));
 };
 
-function _runScript(url, cookies) {
+function _tabHandler([tab]) {
+    let mainPromise = _runScript(tab.url);
+    mainPromise.then(() => {});
+};
+
+async function _runScript(url) {
 
     let _uri = `ytdl7000:\"${url}\"`;
 
@@ -92,19 +97,62 @@ function _runScript(url, cookies) {
         _uri += ` --restart-attempts \"${element.value}\"`;
     };
 
-    for (const cookie of cookies) {
-        _uri += " --cookies"
-        _uri += ` \"${cookie.domain}\"`;
-        _uri += ` \"${cookie.domain.startsWith(".")}\"`;
-        _uri += ` \"${cookie.path}\"`;
-        _uri += ` \"${!cookie.httpOnly}\"`;
-        _uri += ` \"${Math.round(cookie.expirationDate)}\"`;
-        _uri += ` \"${cookie.name}\"`;
-        _uri += ` \"${cookie.value}\"`;
+
+    element = document.getElementById("passCookies");
+    if (element.checked) {
+
+        let cookies = await chrome.cookies.getAll({url: url});
+
+        if (cookies.length >= 1) {
+            let cookiesNetscape = "# Netscape HTTP Cookie File\n";
+            for (const cookie of cookies) {
+
+                cookiesNetscape += cookie.domain;
+                cookiesNetscape += "\t";
+
+                cookiesNetscape += (cookie.domain.startsWith(".")) ? "TRUE" : "FALSE";
+                cookiesNetscape += "\t";
+
+                cookiesNetscape += cookie.path;
+                cookiesNetscape += "\t";
+
+                cookiesNetscape += (cookie.httpOnly) ? "FALSE" : "TRUE";
+                cookiesNetscape += "\t";
+
+                cookiesNetscape += String(Math.round(cookie.expirationDate));
+                cookiesNetscape += "\t";
+
+                cookiesNetscape += cookie.name;
+                cookiesNetscape += "\t";
+
+                cookiesNetscape += cookie.value;
+
+                cookiesNetscape += "\n";
+
+            };
+            let blob = new Blob([cookiesNetscape], {type: "text/plain"});
+
+            let downloadId = await chrome.downloads.download(
+                {
+                    filename: "_cookiesData.tmp",
+                    conflictAction: "overwrite",
+                    saveAs: false,
+                    url: URL.createObjectURL(blob)
+                }
+            );
+            if (downloadId !== undefined) {
+                while (true) {
+                    let [downloadItem] = await chrome.downloads.search({id: downloadId});
+                    if (downloadItem.filename) {
+                        _uri += ` --cookies-file \"${downloadItem.filename}\"`;
+                        break;
+                    };
+                    await sleep(500);
+                };
+            };
+        };
     };
-
     window.open(_uri);
-
 };
 
 
