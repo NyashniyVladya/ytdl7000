@@ -17,7 +17,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.15.14"
+__version__ = "1.15.15"
 
 
 def _get_logger():
