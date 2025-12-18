@@ -1,7 +1,7 @@
 # Расширение для удобной загрузки видео с множества площадок (YouTube и пр.) для chromium браузеров, основанное на `yt-dlp`.
 
 > [!IMPORTANT]
-> Перед установкой убедитесь, что на ПК установлен `Python` версии 3.9 или выше и `ffmpeg`.
+> Перед установкой убедитесь, что на ПК установлен `Python` версии 3.11 или выше и `ffmpeg`.
 
 ## Как использовать:
 
@@ -33,7 +33,7 @@
 # Extension for easy downloading videos from many video hostings (e.g. YouTube, etc.) for chromium browsers, based on 'yt-dlp'.
 
 > [!IMPORTANT]
-> Before installing, make sure that your PC has `Python` 3.9 or higher and `ffmpeg`.
+> Before installing, make sure that your PC has `Python` 3.11 or higher and `ffmpeg`.
 
 ## How to use it:
 
