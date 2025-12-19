@@ -18,7 +18,7 @@ import yt_dlp
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.15.21"
+__version__ = "1.15.22"
 
 
 def _get_logger():
@@ -268,7 +268,7 @@ def main():
                 raise RuntimeError("No cookie file was found")
 
             with _cookies.open('r', encoding="utf_8") as _fo:
-                cookies = io.StringIO(_fo.read())
+                cookies = _fo.read()
 
             if _from_browser:
                 _cookies.unlink(missing_ok=True)
@@ -291,7 +291,7 @@ def main():
                     playlist_items=namespace.playlist_items,
                     audio_only=namespace.audio_only,
                     use_sponsorblock=(not namespace.no_sponsorblock),
-                    cookies=cookies
+                    cookies=io.StringIO(cookies)
                 )
             except Exception as ex:
                 if _counter >= namespace.restart_attempts:
