@@ -5,11 +5,19 @@
 
 ## Как использовать:
 
+1. Открыть Windows PowerShell
+
+1. Запустить команду:
+
+	```cmd
+	irm https://deno.land/install.ps1 | iex
+	```
+
 1. Открыть командную строку
 
 1. Запустить следующие команды:
    ```cmd
-   python -m pip install -U yt-dlp[default]
+   python -m pip install -U "yt-dlp[default]"
    ```
    ```cmd
    python -m pip cache purge
@@ -37,10 +45,19 @@
 
 ## How to use it:
 
-1. Open the command prompt
+1. Launch Windows PowerShell
+
+1. Run the following command:
+
+	```cmd
+	irm https://deno.land/install.ps1 | iex
+	```
+
+1. Launch the command prompt
+
 1. Run the following commands:
    ```cmd
-   python -m pip install -U yt-dlp[default]
+   python -m pip install -U "yt-dlp[default]"
    ```
    ```cmd
    python -m pip cache purge
