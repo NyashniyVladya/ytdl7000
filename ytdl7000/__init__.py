@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.17.0"
+__version__ = "1.17.2"
 
 
 def _get_logger():
@@ -261,7 +261,7 @@ def main():
         parser.add_argument("--best-height", default=1080, type=int)
         parser.add_argument("--restart-attempts", default=5, type=int)
         parser.add_argument("--load-full-playlist", action="store_true")
-        parser.add_argument("--playlist-extra-folder", action="store_true")
+        parser.add_argument("--use-playlist-extra-folder", action="store_true")
         parser.add_argument("--use-playlist-numeration", action="store_true")
         parser.add_argument("--invert-playlist-numeration", action="store_true")
         parser.add_argument("--playlist-items", default=None)
@@ -291,7 +291,7 @@ def main():
             best_height=namespace.best_height,
             skip_errors=namespace.skip_errors,
             load_full_playlist=namespace.load_full_playlist,
-            use_playlist_extra_folder=namespace.playlist_extra_folder,
+            use_playlist_extra_folder=namespace.use_playlist_extra_folder,
             use_playlist_numeration=namespace.use_playlist_numeration,
             invert_playlist_numeration=namespace.invert_playlist_numeration,
             playlist_items=namespace.playlist_items,

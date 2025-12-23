@@ -50,7 +50,7 @@ async function _runScript(url) {
 
     let element = document.getElementById("maxQuality");
     if (element.value) {
-        requestData["best-height"] = element.value;
+        requestData["best-height"] = Number(element.value);
     };
 
     element = document.getElementById("chooseSavedir");
@@ -65,7 +65,7 @@ async function _runScript(url) {
 
     element = document.getElementById("savePlaylistInExtraFolder");
     if (element.checked) {
-        requestData["playlist-extra-folder"] = true;
+        requestData["use-playlist-extra-folder"] = true;
     };
 
     element = document.getElementById("usePlaylistNumeration");
@@ -94,13 +94,13 @@ async function _runScript(url) {
     };
 
     element = document.getElementById("useSponsorBlock");
-    if (!(element.checked)) {
-        requestData["no-sponsorblock"] = true;
+    if (element.checked) {
+        requestData["use-sponsorblock"] = true;
     };
 
     element = document.getElementById("restartAttempts");
     if (element.value) {
-        requestData["restart-attempts"] = element.value;
+        requestData["restart-attempts"] = Number(element.value);
     };
 
     element = document.getElementById("passCookies");

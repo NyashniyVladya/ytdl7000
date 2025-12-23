@@ -17,7 +17,7 @@
 
 1. Запустить следующие команды:
    ```cmd
-   python -m pip install -U "yt-dlp[default]"
+   python -m pip install -U "yt-dlp[default]" yt-dlp-ejs
    ```
    ```cmd
    python -m pip cache purge
@@ -57,7 +57,7 @@
 
 1. Run the following commands:
    ```cmd
-   python -m pip install -U "yt-dlp[default]"
+   python -m pip install -U "yt-dlp[default]" yt-dlp-ejs
    ```
    ```cmd
    python -m pip cache purge
