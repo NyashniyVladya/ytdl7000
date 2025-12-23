@@ -9,16 +9,19 @@ import time
 import logging
 import os
 import io
+import json
 import shlex
 import argparse
 import pathlib
+import threading
 import shutil
-import urllib.parse
 import yt_dlp
+import http.server
+import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.15.22"
+__version__ = "1.17.0"
 
 
 def _get_logger():
@@ -34,6 +37,50 @@ def _get_logger():
 
 LOGGER = _get_logger()
 del _get_logger
+
+
+class _Handler(http.server.BaseHTTPRequestHandler):
+
+    LAST_VALUE = None
+
+    def _send_answer(self, status_code, message):
+
+        if 400 <= status_code < 600:
+            answer = {"error": message}
+        else:
+            answer = {"message": message}
+
+        self.send_response(status_code)
+        self.send_header("Access-Control-Allow-Origin", '*')
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(answer).encode("utf_8"))
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", '*')
+        self.send_header("Access-Control-Allow-Methods", 'POST')
+        self.send_header("Access-Control-Allow-Headers", '*')
+        self.end_headers()
+
+    def do_POST(self):
+
+        if "application/json" not in self.headers["Content-Type"].lower():
+            self._send_answer(415, "Incorrect content-type")
+            return
+
+        try:
+            data = self.rfile.read(int(self.headers["Content-Length"]))
+            data = json.loads(data)
+        except Exception:
+            self._send_answer(400, "Error while decoding JSON")
+        else:
+            if isinstance(data, dict):
+                self._send_answer(200, "Success")
+                _Handler.LAST_VALUE = data
+                threading.Thread(target=self.server.shutdown).start()
+            else:
+                self._send_answer(400, "Incorrect JSON format")
 
 
 def _get_pp_options(use_sponsorblock, audio_only=False):
@@ -76,7 +123,7 @@ def download(
         invert_playlist_numeration=False,
         audio_only=False,
         use_sponsorblock=True,
-        cookies=None
+        cookies_txt=None
 ):
 
     best_height = int(best_height)
@@ -184,8 +231,8 @@ def download(
     else:
         params["noplaylist"] = True
 
-    if cookies:
-        params["cookiefile"] = cookies
+    if cookies_txt:
+        params["cookiefile"] = io.StringIO(cookies_txt)
 
     try:
 
@@ -209,6 +256,7 @@ def main():
 
         parser = argparse.ArgumentParser("ytdl7000")
         parser.add_argument("urls", nargs='+')
+
         parser.add_argument("--savedir", default=None)
         parser.add_argument("--best-height", default=1080, type=int)
         parser.add_argument("--restart-attempts", default=5, type=int)
@@ -217,11 +265,13 @@ def main():
         parser.add_argument("--use-playlist-numeration", action="store_true")
         parser.add_argument("--invert-playlist-numeration", action="store_true")
         parser.add_argument("--playlist-items", default=None)
-        parser.add_argument("--cookies-file", default=None)
         parser.add_argument("--skip-errors", action="store_true")
         parser.add_argument("--audio-only", action="store_true")
         parser.add_argument("--no-sponsorblock", action="store_true")
-        parser.add_argument("--wait-cookie-timeout", default=15., type=float)
+        parser.add_argument("--cookies-txt", default=None)
+
+        parser.add_argument("--data-port", default=None)
+
         parser.add_argument("--from-browser", action="store_true")
 
         namespace = parser.parse_args()
@@ -236,42 +286,39 @@ def main():
             single_arg = urllib.parse.unquote(single_arg)
             namespace = parser.parse_args(shlex.split(single_arg))
 
-        _savedir = namespace.savedir
-        if _savedir == ":autoChoice:":
-            _savedir = utils.ask_directory()
+        params = dict(
+            savedir=namespace.savedir,
+            best_height=namespace.best_height,
+            skip_errors=namespace.skip_errors,
+            load_full_playlist=namespace.load_full_playlist,
+            use_playlist_extra_folder=namespace.playlist_extra_folder,
+            use_playlist_numeration=namespace.use_playlist_numeration,
+            invert_playlist_numeration=namespace.invert_playlist_numeration,
+            playlist_items=namespace.playlist_items,
+            audio_only=namespace.audio_only,
+            use_sponsorblock=(not namespace.no_sponsorblock),
+            restart_attempts=namespace.restart_attempts,
+            cookies_txt=namespace.cookies_txt
+        )
 
-        if _savedir is not None:
-            _savedir = pathlib.Path(_savedir).resolve()
+        data_port = namespace.data_port
+        if data_port:
+            LOGGER.info("Port was passed. Wait data request")
+            data_port = int(data_port)
+            with http.server.HTTPServer(("", data_port), _Handler) as _server:
+                _server.serve_forever()
+            for k, v in _Handler.LAST_VALUE.items():
+                params[k.replace('-', '_')] = v
+            LOGGER.info("Success")
+            _Handler.LAST_VALUE = None
 
-        cookies = None
-        _cookies = namespace.cookies_file
-        if _cookies:
+        restart_attempts = params.pop("restart_attempts")
 
-            _cookies = pathlib.Path(_cookies).resolve()
-            if _from_browser:
-                _wait_start_time = None
-                while True:
-                    # Waiting for the file to be available,
-                    # in case an error occurred when downloading the file
-                    # by the browser.
-                    if _cookies.is_file():
-                        break
-                    _now = time.time()
-                    if _wait_start_time is None:
-                        _wait_start_time = _now
-                    _wait_time = _now - _wait_start_time
-                    if _wait_time > namespace.wait_cookie_timeout:
-                        break
-                    time.sleep(.1)
+        if params["savedir"] == ":autoChoice:":
+            params["savedir"] = utils.ask_directory()
 
-            if not _cookies.is_file():
-                raise RuntimeError("No cookie file was found")
-
-            with _cookies.open('r', encoding="utf_8") as _fo:
-                cookies = _fo.read()
-
-            if _from_browser:
-                _cookies.unlink(missing_ok=True)
+        if params["savedir"] is not None:
+            params["savedir"] = pathlib.Path(params["savedir"]).resolve()
 
         _counter = 0
         while True:
@@ -279,22 +326,9 @@ def main():
             LOGGER.info("Attempt %d", (_counter + 1))
 
             try:
-                download(
-                    *namespace.urls,
-                    savedir=_savedir,
-                    best_height=namespace.best_height,
-                    skip_errors=namespace.skip_errors,
-                    load_full_playlist=namespace.load_full_playlist,
-                    use_playlist_extra_folder=namespace.playlist_extra_folder,
-                    use_playlist_numeration=namespace.use_playlist_numeration,
-                    invert_playlist_numeration=namespace.invert_playlist_numeration,
-                    playlist_items=namespace.playlist_items,
-                    audio_only=namespace.audio_only,
-                    use_sponsorblock=(not namespace.no_sponsorblock),
-                    cookies=io.StringIO(cookies)
-                )
+                download(*namespace.urls, **params)
             except Exception as ex:
-                if _counter >= namespace.restart_attempts:
+                if _counter >= restart_attempts:
                     raise
                 LOGGER.exception(ex)
             else:

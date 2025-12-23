@@ -33,6 +33,10 @@ async function sleep(ms) {
     return new Promise(((resolve) => setTimeout(resolve, ms)));
 };
 
+function randInt(minValue, maxValue) {
+    return Math.round((minValue + (Math.random() * (maxValue - minValue))));
+};
+
 function _tabHandler([tab]) {
     let mainPromise = _runScript(tab.url);
     mainPromise.then(() => {});
@@ -42,61 +46,62 @@ async function _runScript(url) {
 
     let _uri = `ytdl7000:\"${url}\"`;
 
+    let requestData = {};
+
     let element = document.getElementById("maxQuality");
     if (element.value) {
-        _uri += ` --best-height \"${element.value}\"`;
+        requestData["best-height"] = element.value;
     };
 
     element = document.getElementById("chooseSavedir");
     if (element.checked) {
-        _uri += " --savedir \":autoChoice:\"";
+        requestData["savedir"] = ":autoChoice:";
     };
 
     element = document.getElementById("loadFullPlaylist");
     if (element.checked) {
-        _uri += " --load-full-playlist";
+        requestData["load-full-playlist"] = true;
     };
 
     element = document.getElementById("savePlaylistInExtraFolder");
     if (element.checked) {
-        _uri += " --playlist-extra-folder";
+        requestData["playlist-extra-folder"] = true;
     };
 
     element = document.getElementById("usePlaylistNumeration");
     if (element.checked) {
-        _uri += " --use-playlist-numeration";
+        requestData["use-playlist-numeration"] = true;
     };
 
     element = document.getElementById("invertPlaylistNumeration");
     if (element.checked) {
-        _uri += " --invert-playlist-numeration";
+        requestData["invert-playlist-numeration"] = true;
     };
 
     element = document.getElementById("playlistItems");
     if (element.value) {
-        _uri += ` --playlist-items \"${element.value}\"`;
+        requestData["playlist-items"] = element.value;
     };
 
     element = document.getElementById("skipErrors");
     if (element.checked) {
-        _uri += " --skip-errors";
+        requestData["skip-error"] = true;
     };
 
     element = document.getElementById("audioOnly");
     if (element.checked) {
-        _uri += " --audio-only";
+        requestData["audio-only"] = true;
     };
 
     element = document.getElementById("useSponsorBlock");
     if (!(element.checked)) {
-        _uri += " --no-sponsorblock";
+        requestData["no-sponsorblock"] = true;
     };
 
     element = document.getElementById("restartAttempts");
     if (element.value) {
-        _uri += ` --restart-attempts \"${element.value}\"`;
+        requestData["restart-attempts"] = element.value;
     };
-
 
     element = document.getElementById("passCookies");
     if (element.checked) {
@@ -104,6 +109,7 @@ async function _runScript(url) {
         let cookies = await chrome.cookies.getAll({url: url});
 
         if (cookies.length >= 1) {
+
             let cookiesNetscape = "# Netscape HTTP Cookie File\n";
             for (const cookie of cookies) {
 
@@ -130,29 +136,42 @@ async function _runScript(url) {
                 cookiesNetscape += "\n";
 
             };
-            let blob = new Blob([cookiesNetscape], {type: "text/plain"});
 
-            let downloadId = await chrome.downloads.download(
-                {
-                    filename: "_cookiesData.tmp",
-                    conflictAction: "overwrite",
-                    saveAs: false,
-                    url: URL.createObjectURL(blob)
-                }
-            );
-            if (downloadId !== undefined) {
-                while (true) {
-                    let [downloadItem] = await chrome.downloads.search({id: downloadId});
-                    if (downloadItem.filename && downloadItem.exists) {
-                        _uri += ` --cookies-file \"${downloadItem.filename}\"`;
-                        break;
-                    };
-                    await sleep(500);
-                };
-            };
+            requestData["cookies-txt"] = cookiesNetscape;
+
         };
     };
-    window.open(_uri);
+
+    const port = randInt(1024, 65535);
+    _uri += ` --data-port \"${port}\"`;
+
+    const startWindow = await chrome.windows.create(
+        {url: _uri, setSelfAsOpener: true, focused: false, state: "minimized"}
+    );
+    chrome.windows.remove(startWindow.id);
+    const localURL = new URL(`http://localhost:${port}`);
+    let _attempt = 0;
+    while (true) {
+        _attempt += 1;
+        if (_attempt > 10) {
+            break;
+        };
+        try {
+            const resp = await fetch(
+                localURL,
+                {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json;charset=utf-8"},
+                    body: JSON.stringify(requestData)
+                }
+            );
+            if (resp.ok) {
+                break;
+            };
+        } catch (ex) {
+        };
+        await sleep((_attempt * 1000));
+    };
 };
 
 
