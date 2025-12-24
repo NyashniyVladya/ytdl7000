@@ -29,22 +29,32 @@ if (_config) {
     };
 };
 
-async function sleep(ms) {
-    return new Promise(((resolve) => setTimeout(resolve, ms)));
+
+function setLang() {
+
+    let lang = _CONFIG.lang;
+    if (lang === null) {
+        const localeObject = new Intl.Locale(navigator.language);
+        lang = localeObject.language;
+        if (!(lang in translations)) {
+            lang = "en";
+        };
+        _CONFIG.lang = lang;
+        window.localStorage.setItem("config", JSON.stringify(_CONFIG));
+    };
+
+    let element;
+    for (let key in translations[lang]) {
+        element = document.getElementById(key);
+        if (element) {
+            element.innerHTML = translations[lang][key];
+        };
+    };
 };
 
-function randInt(minValue, maxValue) {
-    return Math.round((minValue + (Math.random() * (maxValue - minValue))));
-};
+async function startDownload() {
 
-function _tabHandler([tab]) {
-    let mainPromise = _runScript(tab.url);
-    mainPromise.then(() => {});
-};
-
-async function _runScript(url) {
-
-    let _uri = `ytdl7000:\"${url}\"`;
+    const [tab] = await chrome.tabs.query({active: true});
 
     let requestData = {};
 
@@ -106,7 +116,7 @@ async function _runScript(url) {
     element = document.getElementById("passCookies");
     if (element.checked) {
 
-        let cookies = await chrome.cookies.getAll({url: url});
+        let cookies = await chrome.cookies.getAll({url: tab.url});
 
         if (cookies.length >= 1) {
 
@@ -142,59 +152,11 @@ async function _runScript(url) {
         };
     };
 
-    const port = randInt(1024, 65535);
-    _uri += ` --data-port \"${port}\"`;
-
-    const startWindow = await chrome.windows.create(
-        {url: _uri, setSelfAsOpener: true, focused: false, state: "minimized"}
-    );
-    chrome.windows.remove(startWindow.id);
-    const localURL = new URL(`http://localhost:${port}`);
-    let _attempt = 0;
-    while (true) {
-        _attempt += 1;
-        if (_attempt > 10) {
-            break;
-        };
-        try {
-            const resp = await fetch(
-                localURL,
-                {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json;charset=utf-8"},
-                    body: JSON.stringify(requestData)
-                }
-            );
-            if (resp.ok) {
-                break;
-            };
-        } catch (ex) {
-        };
-        await sleep((_attempt * 1000));
-    };
-};
-
-
-function setLang() {
-
-    let lang = _CONFIG.lang;
-    if (lang === null) {
-        const localeObject = new Intl.Locale(navigator.language);
-        lang = localeObject.language;
-        if (!(lang in translations)) {
-            lang = "en";
-        };
-        _CONFIG.lang = lang;
-        window.localStorage.setItem("config", JSON.stringify(_CONFIG));
-    };
-
-    let element;
-    for (let key in translations[lang]) {
-        element = document.getElementById(key);
-        if (element) {
-            element.innerHTML = translations[lang][key];
-        };
-    };
+    await chrome.runtime.sendMessage({
+        command: "startDownload",
+        url: tab.url,
+        requestData: requestData
+    });
 };
 
 function init() {
@@ -258,12 +220,7 @@ function init() {
 
 
     element = document.getElementById("startDownload");
-    element.addEventListener(
-        "click",
-        function() {
-            chrome.tabs.query({active: true}, _tabHandler);
-        }
-    );
+    element.addEventListener("click", startDownload);
 
 };
 

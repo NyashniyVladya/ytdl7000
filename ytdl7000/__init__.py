@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.17.2"
+__version__ = "1.18.9"
 
 
 def _get_logger():

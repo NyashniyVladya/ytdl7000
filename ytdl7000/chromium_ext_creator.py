@@ -29,10 +29,13 @@ def create_manifest():
         "action": {
             "default_popup": "popup.html"
         },
+        "background": {
+            "service_worker": "service_worker.js",
+            "type": "module"
+        },
         "permissions": [
             "tabs",
-            "cookies",
-            "downloads"
+            "cookies"
         ],
         "icons": {
             "16": "icons/icon16.png",
