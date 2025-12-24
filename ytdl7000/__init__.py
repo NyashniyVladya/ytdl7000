@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.18.9"
+__version__ = "1.18.10"
 
 
 def _get_logger():
@@ -203,6 +203,10 @@ def download(
             use_sponsorblock=use_sponsorblock,
             audio_only=audio_only
         ),
+        "js_runtimes": {
+            "node": {},
+            "deno": {}
+        },
         "postprocessor_args": {
             "merger+ffmpeg_i1": ["-stream_loop", "-1"],
             "merger+ffmpeg_o1": ["-shortest", "-shortest_buf_duration", "0"]

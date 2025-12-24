@@ -2,16 +2,9 @@
 
 > [!IMPORTANT]
 > Перед установкой убедитесь, что на ПК установлен `Python` версии 3.11 или выше и `ffmpeg`.
+> Для корректного скачивания с YouTube так же рекомендуется установить NodeJS или Deno.
 
 ## Как использовать:
-
-1. Открыть Windows PowerShell
-
-1. Запустить команду:
-
-	```cmd
-	irm https://deno.land/install.ps1 | iex
-	```
 
 1. Открыть командную строку
 
@@ -42,16 +35,9 @@
 
 > [!IMPORTANT]
 > Before installing, make sure that your PC has `Python` 3.11 or higher and `ffmpeg`.
+> To download correctly from YouTube, it is also recommended to install NodeJS or Deno.
 
 ## How to use it:
-
-1. Launch Windows PowerShell
-
-1. Run the following command:
-
-	```cmd
-	irm https://deno.land/install.ps1 | iex
-	```
 
 1. Launch the command prompt
 
