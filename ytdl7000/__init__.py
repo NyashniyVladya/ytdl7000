@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.18.12"
+__version__ = "1.19.0"
 
 
 def _get_logger():
@@ -148,13 +148,8 @@ def download(
         _format_param = "ba[acodec^=mp3]/ba/b/b*"
     else:
         _format_param = (
-            "bv[vcodec^=h264][height<={0}]+ba[acodec^=aac]/"
-            "bv[vcodec^=h264][height<={0}]+ba/"
-            "b[vcodec^=h264][height<={0}]/"
             "bv[height<={0}]+ba/"
             "b[height<={0}]/"
-            "bv[vcodec^=h264]+ba[acodec^=aac]/"
-            "bv[vcodec^=h264]+ba/"
             "bv+ba/"
             "b/"
             "b*"
@@ -222,6 +217,8 @@ def download(
         },
         "post_hooks": (_f, )
     }
+    if not audio_only:
+        params["merge_output_format"] = "mp4"
 
     if isinstance(playlist_items, str):
         playlist_items = playlist_items.strip()
