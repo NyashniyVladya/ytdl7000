@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.18.11"
+__version__ = "1.18.12"
 
 
 def _get_logger():
@@ -148,10 +148,13 @@ def download(
         _format_param = "ba[acodec^=mp3]/ba/b/b*"
     else:
         _format_param = (
-            "bv[vext^=mp4][height<={0}]+ba/"
-            "b[vext^=mp4][height<={0}]/"
+            "bv[vcodec^=h264][height<={0}]+ba[acodec^=aac]/"
+            "bv[vcodec^=h264][height<={0}]+ba/"
+            "b[vcodec^=h264][height<={0}]/"
             "bv[height<={0}]+ba/"
             "b[height<={0}]/"
+            "bv[vcodec^=h264]+ba[acodec^=aac]/"
+            "bv[vcodec^=h264]+ba/"
             "bv+ba/"
             "b/"
             "b*"
