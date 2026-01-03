@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.18.10"
+__version__ = "1.18.11"
 
 
 def _get_logger():
@@ -147,9 +147,15 @@ def download(
     if audio_only:
         _format_param = "ba[acodec^=mp3]/ba/b/b*"
     else:
-        _format_param = """
-            bv[height<={0}]+ba/b[height<={0}]/bv+ba/b/b*
-        """.strip().format(best_height)
+        _format_param = (
+            "bv[vext^=mp4][height<={0}]+ba/"
+            "b[vext^=mp4][height<={0}]/"
+            "bv[height<={0}]+ba/"
+            "b[height<={0}]/"
+            "bv+ba/"
+            "b/"
+            "b*"
+        ).strip().format(best_height)
 
     info = None
     _pattern = re.compile("^(?P<num>\\d+)(?=\\.\\s)")
