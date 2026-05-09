@@ -14,6 +14,7 @@ export const ru = {
     audioOnlyLabel: "Загружать только аудио",
     useSponsorBlockLabel: "Удалить рекламу через SponsorBlock",
     passCookiesLabel: "Передать куки загрузчику",
+    proxyParamLabel: "Использовать прокси:",
     restartAttemptsLabel: "Повторных попыток при неудаче:",
     startDownload: "Начать загрузку"
 };
@@ -31,6 +32,7 @@ export const en = {
     audioOnlyLabel: "Audio only",
     useSponsorBlockLabel: "Remove garbage by SponsorBlock",
     passCookiesLabel: "Pass cookies to downloader",
+    proxyParamLabel: "Specify proxy:",
     restartAttemptsLabel: "Restart attempts:",
     startDownload: "Start download"
 };

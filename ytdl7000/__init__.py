@@ -21,7 +21,7 @@ import urllib.parse
 from . import utils
 
 __author__ = "Vladya"
-__version__ = "1.19.0"
+__version__ = "1.19.2"
 
 
 def _get_logger():
@@ -123,7 +123,8 @@ def download(
         invert_playlist_numeration=False,
         audio_only=False,
         use_sponsorblock=True,
-        cookies_txt=None
+        cookies_txt=None,
+        proxy=None
 ):
 
     best_height = int(best_height)
@@ -229,6 +230,9 @@ def download(
     if skip_errors:
         params["ignoreerrors"] = True
 
+    if proxy:
+        params["proxy"] = proxy
+
     if load_full_playlist:
         if use_playlist_extra_folder or use_playlist_numeration:
             pattern = ""
@@ -279,6 +283,7 @@ def main():
         parser.add_argument("--audio-only", action="store_true")
         parser.add_argument("--no-sponsorblock", action="store_true")
         parser.add_argument("--cookies-txt", default=None)
+        parser.add_argument("--proxy", default=None)
 
         parser.add_argument("--data-port", default=None)
 
@@ -308,7 +313,8 @@ def main():
             audio_only=namespace.audio_only,
             use_sponsorblock=(not namespace.no_sponsorblock),
             restart_attempts=namespace.restart_attempts,
-            cookies_txt=namespace.cookies_txt
+            cookies_txt=namespace.cookies_txt,
+            proxy=namespace.proxy
         )
 
         data_port = namespace.data_port

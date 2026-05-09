@@ -3,7 +3,7 @@ import * as translations from "./translations.js";
 
 let _CONFIG = {
     lang: null,
-    version: 6,
+    version: 7,
     checkBoxes: {
         chooseSavedir: false,
         loadFullPlaylist: false,
@@ -18,7 +18,8 @@ let _CONFIG = {
     fields: {
         maxQuality: "1080",
         restartAttempts: "5",
-        playlistItems: ""
+        playlistItems: "",
+        proxyParam: ""
     }
 };
 let _config = window.localStorage.getItem("config");
@@ -150,6 +151,11 @@ async function startDownload() {
             requestData["cookies-txt"] = cookiesNetscape;
 
         };
+    };
+
+    element = document.getElementById("proxyParam");
+    if (element.value) {
+        requestData["proxy"] = element.value;
     };
 
     await chrome.runtime.sendMessage({
